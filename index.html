@@ -559,6 +559,36 @@ body.editing .act-fs { top: 50px; }
   .act-shot::before, .act-fs { display: none !important; }
   .act-head { break-inside: avoid; break-after: avoid; }
 }
+
+/* Pop-up scroll cue: hint under the title + Next image button */
+.act-box { position: relative; }
+.act-shot[data-pos]::before { display: none; }
+.act-hint { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.act-hint:empty { display: none; }
+.act-nav {
+  position: absolute; right: 26px; bottom: 22px; z-index: 5;
+  display: none; align-items: center; gap: 10px;
+}
+.act-modal.multi .act-nav { display: flex; }
+.act-nav-count {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 13px;
+  letter-spacing: 0.14em; color: #fff; background: rgba(0,0,0,0.6);
+  padding: 8px 12px; border-radius: 999px;
+}
+.act-next {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 14px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
+  background: var(--brand); border: none; border-radius: 999px; padding: 11px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35); transition: background 0.15s ease;
+}
+.act-next:hover { background: #002050; }
+.act-next-arrow { display: inline-block; font-size: 17px; line-height: 1; animation: actNudge 1.4s ease-in-out infinite; }
+.act-modal.seen .act-next-arrow, .act-modal.at-end .act-next-arrow { animation: none; }
+@keyframes actNudge { 0%, 100% { transform: translateY(-1px); } 50% { transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .act-next-arrow { animation: none; } }
+@media (max-width: 720px) { .act-nav { right: 12px; bottom: 58px; } }
+@media print { .act-nav, .act-hint { display: none !important; } }
 </style>
 </head>
 <body>
@@ -1013,6 +1043,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 01</div>
             <h2 class="act-title" id="act-broadcast-title">Broadcast Integrations</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1064,6 +1095,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1073,6 +1108,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 02</div>
             <h2 class="act-title" id="act-overlay-title">Virtual Overlay</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1096,6 +1132,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1105,6 +1145,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 03</div>
             <h2 class="act-title" id="act-arena-title">In-Arena Branding</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1184,6 +1225,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1193,6 +1238,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 04</div>
             <h2 class="act-title" id="act-social-title">Social Content</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1230,6 +1276,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1239,6 +1289,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 05</div>
             <h2 class="act-title" id="act-content-title">Integrated Content</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1276,6 +1327,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1285,6 +1340,7 @@ body.editing .act-fs { top: 50px; }
           <div>
             <div class="act-kicker" contenteditable="false">Activation 06</div>
             <h2 class="act-title" id="act-ambassadors-title">Athlete Ambassadors</h2>
+            <p class="act-hint" contenteditable="false"></p>
           </div>
           <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
         </div>
@@ -1322,6 +1378,10 @@ body.editing .act-fs { top: 50px; }
           </div>
           <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
         </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
       </div>
     </div>
 
@@ -1347,7 +1407,7 @@ body.editing .act-fs { top: 50px; }
 
 <script>
 (function () {
-  var BUILD = "c8db16b9d13";
+  var BUILD = "c67e2eba648";
   var KEY = 'mvp-1xbet-doc-v1';
   var IDBNAME = KEY + ':images';
   var sheet = document.getElementById('sheet');
@@ -1582,10 +1642,7 @@ body.editing .act-fs { top: 50px; }
       any = any || shots.length > 0;
       m.classList.toggle('has-images', shots.length > 0);
       all(m, '.act-shot').forEach(function (s) { s.removeAttribute('data-pos'); });
-      shots.forEach(function (s, j) {
-        s.setAttribute('data-pos', (j + 1) + ' / ' + shots.length +
-          (j < shots.length - 1 ? '   \u2193 scroll' : ''));
-      });
+      navState(m);
       var k = m.querySelector('.act-kicker');
       if (k) k.textContent = 'Activation ' + pad2(i + 1);
       var card = document.createElement('button');
@@ -1615,6 +1672,34 @@ body.editing .act-fs { top: 50px; }
     actPanel.classList.toggle('act-none', !any);
   }
 
+  // Which image is in view, and what the Next button should say.
+  function navState(m) {
+    var shots = filled(m), body = m.querySelector('.act-body'), n = shots.length;
+    m.classList.toggle('multi', n > 1);
+    var hint = m.querySelector('.act-hint');
+    if (hint) hint.textContent = n > 1
+      ? n + ' images \u2014 scroll down or use the Next image button to see them all.' : '';
+    if (n < 2 || !body) { m.classList.remove('at-end'); return; }
+    var top0 = body.getBoundingClientRect().top - body.scrollTop, cur = 0, best = Infinity;
+    shots.forEach(function (s, j) {
+      var d = Math.abs(s.getBoundingClientRect().top - top0 - body.scrollTop);
+      if (d < best) { best = d; cur = j; }
+    });
+    var end = cur === n - 1;
+    m.classList.toggle('at-end', end);
+    var c = m.querySelector('.act-nav-count'); if (c) c.textContent = (cur + 1) + ' / ' + n;
+    var l = m.querySelector('.act-next-label'); if (l) l.textContent = end ? 'Back to first' : 'Next image';
+    var a = m.querySelector('.act-next-arrow'); if (a) a.textContent = end ? '\u2191' : '\u2193';
+  }
+  all(actPanel, '.act-modal').forEach(function (m) {
+    var b = m.querySelector('.act-body'), raf = 0;
+    if (!b) return;
+    b.addEventListener('scroll', function () {
+      if (b.scrollTop > 10) m.classList.add('seen');
+      if (!raf) raf = requestAnimationFrame(function () { raf = 0; navState(m); });
+    });
+  });
+
   function openAct(id, card) {
     var m = document.getElementById(id);
     if (!m) return;
@@ -1622,6 +1707,9 @@ body.editing .act-fs { top: 50px; }
     m.classList.add('open');
     document.body.classList.add('modal-open');
     openModal = m;
+    m.classList.remove('seen');
+    var bd = m.querySelector('.act-body'); if (bd) bd.scrollTop = 0;
+    navState(m);
     var x = m.querySelector('.act-close'); if (x) x.focus();
   }
   function closeAct() {
@@ -1809,6 +1897,14 @@ body.editing .act-fs { top: 50px; }
     var card = t.closest('.act-card');
     if (card) { openAct(card.getAttribute('data-open')); return; }
     if (t.closest('.act-close')) { closeAct(); return; }
+    var nx = t.closest('.act-next');
+    if (nx) {
+      var nm = nx.closest('.act-modal');
+      nm.classList.add('seen');
+      if (nm.classList.contains('at-end')) nm.querySelector('.act-body').scrollTo({ top: 0, behavior: 'smooth' });
+      else pageTo(nm, 1);
+      return;
+    }
     if (openModal && t === openModal) { closeAct(); return; }
     var tool = t.closest('[data-do]');
     if (tool) {
