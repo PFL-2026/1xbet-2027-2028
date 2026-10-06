@@ -639,6 +639,24 @@ body.editing .act-card-title { cursor: text; }
   transform: none !important; box-shadow: none !important;
 }
 body.act-sorting, body.act-sorting * { cursor: grabbing !important; user-select: none !important; }
+
+/* Mobile layout — phones and small tablets */
+@media (max-width: 720px) {
+  .sheet { padding: 22px 18px 30px; box-shadow: none; }
+  .lockup { gap: 14px; }
+  .lockup img.mvp { height: 38px; }
+  .lockup img.partner { height: auto; max-height: 30px; max-width: 52vw; }
+  h1 { font-size: 24px; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; overflow: visible; }
+  .tab { padding: 10px 4px; font-size: 11px; letter-spacing: 0.08em; line-height: 1.25;
+         white-space: normal; text-align: center; }
+  .chart { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .chart svg { min-width: 720px; }
+  .chart::after { content: 'Swipe to see the full chart →'; display: block; margin-top: 6px;
+         font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600;
+         letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .terms-asset { gap: 10px; }
+}
 </style>
 </head>
 <body>
@@ -1620,7 +1638,7 @@ body.act-sorting, body.act-sorting * { cursor: grabbing !important; user-select:
 </template>
 <script>
 (function () {
-  var BUILD = "dmux2nxxd";
+  var BUILD = "d35b7f2929";
   var KEY = 'mvp-1xbet-doc-v1';
   var IDBNAME = KEY + ':images';
   var sheet = document.getElementById('sheet');
