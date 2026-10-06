@@ -621,6 +621,24 @@ body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
 }
 .act-add-box:hover { border-color: var(--brand); color: var(--brand); }
 .act-cover-img { display: none !important; }
+
+/* Boxes: drag to reorder */
+.act-move {
+  position: absolute; top: 8px; left: 8px; z-index: 3; cursor: grab;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
+  background: rgba(255,255,255,0.95); border: 1px solid var(--hair);
+  border-radius: 3px; padding: 5px 9px;
+}
+.act-move:hover { border-color: var(--brand); color: var(--brand); }
+body.editing .act-card-body { cursor: grab; }
+body.editing .act-card-title { cursor: text; }
+.act-card.sorting {
+  opacity: 0.55; outline: 2px dashed var(--brand); outline-offset: 3px;
+  transform: none !important; box-shadow: none !important;
+}
+body.act-sorting, body.act-sorting * { cursor: grabbing !important; user-select: none !important; }
 </style>
 </head>
 <body>
@@ -1485,7 +1503,7 @@ body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
 </template>
 <script>
 (function () {
-  var BUILD = "c16cea215bd";
+  var BUILD = "c3767229772";
   var KEY = 'mvp-1xbet-doc-v1';
   var IDBNAME = KEY + ':images';
   var sheet = document.getElementById('sheet');
@@ -1747,7 +1765,8 @@ body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
           '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/>' +
           '<path d="M4 17l5-4.5 3.5 3 3-2.5L20 17"/></svg>';
       }
-      th.insertAdjacentHTML('beforeend', '<div class="act-card-tools edit-only">' +
+      th.insertAdjacentHTML('beforeend', '<span class="act-move edit-only" title="Drag to reorder">&#10303; Move</span>' +
+        '<div class="act-card-tools edit-only">' +
         '<button type="button" data-card-do="cover">Change cover</button>' +
         (m.getAttribute('data-cover') ? '<button type="button" data-card-do="cover-reset">Reset cover</button>' : '') +
         '</div>' + (cover ? '<span class="act-drag-hint edit-only">Drag to reposition</span>' : ''));
@@ -2289,7 +2308,7 @@ body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
   actPanel.addEventListener('pointerdown', function (e) {
     if (!editing() || e.button > 0) return;
     var th = e.target.closest && e.target.closest('.act-thumb.has-img');
-    if (!th || e.target.closest('button')) return;
+    if (!th || e.target.closest('button, .act-move')) return;
     var m = modalFor(th);
     if (!m) return;
     var p = (m.getAttribute('data-cover-pos') || '50% 50%').split(' ').map(parseFloat);
@@ -2338,6 +2357,58 @@ body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
     };
     return idbGet(m.id + ':cover').then(function (u) { if (u) ci.setAttribute('src', u); else drop(); }, drop);
   })).then(renderCards);
+
+  // ---- Drag boxes to reorder (edit mode)
+  var sortDrag = null;
+  actPanel.addEventListener('pointerdown', function (e) {
+    if (!editing() || e.button > 0) return;
+    var t = e.target, card = t.closest && t.closest('.act-card');
+    if (!card) return;
+    var onHandle = !!t.closest('.act-move');
+    if (!onHandle && (t.closest('.act-thumb.has-img') || t.closest('.act-card-title') || t.closest('button'))) return;
+    sortDrag = { card: card, x: e.clientX, y: e.clientY, on: false };
+    e.preventDefault();
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (!sortDrag) return;
+    if (!sortDrag.on) {
+      if (Math.abs(e.clientX - sortDrag.x) + Math.abs(e.clientY - sortDrag.y) < 6) return;
+      sortDrag.on = true;
+      sortDrag.card.classList.add('sorting');
+      document.body.classList.add('act-sorting');
+    }
+    e.preventDefault();
+    if (e.clientY < 70) window.scrollBy(0, -14);
+    else if (e.clientY > window.innerHeight - 70) window.scrollBy(0, 14);
+    var el = document.elementFromPoint(e.clientX, e.clientY);
+    var over = el && el.closest && el.closest('.act-card');
+    var wrap = sortDrag.card.parentNode;
+    if (!over || over === sortDrag.card || over.parentNode !== wrap) return;
+    var r = over.getBoundingClientRect();
+    var oneCol = getComputedStyle(wrap).gridTemplateColumns.split(' ').length < 2;
+    var before = oneCol ? e.clientY < r.top + r.height / 2 : e.clientX < r.left + r.width / 2;
+    var ref = before ? over : over.nextSibling;
+    if (ref !== sortDrag.card) wrap.insertBefore(sortDrag.card, ref);
+  }, { passive: false });
+  function endSort() {
+    if (!sortDrag) return;
+    var s = sortDrag; sortDrag = null;
+    if (!s.on) return;
+    s.card.classList.remove('sorting');
+    document.body.classList.remove('act-sorting');
+    dragMoved = true;
+    setTimeout(function () { dragMoved = false; }, 350);
+    var ms = modals();
+    if (!ms.length) return;
+    var parent = ms[0].parentNode, after = ms[ms.length - 1].nextSibling;
+    all(actPanel, '.act-card').forEach(function (c) {
+      var m = document.getElementById(c.getAttribute('data-open'));
+      if (m) parent.insertBefore(m, after);
+    });
+    renderCards(); persist();
+  }
+  document.addEventListener('pointerup', endSort);
+  document.addEventListener('pointercancel', endSort);
 
 })();
 </script>
