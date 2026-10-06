@@ -589,6 +589,38 @@ body.editing .act-fs { top: 50px; }
 @media (prefers-reduced-motion: reduce) { .act-next-arrow { animation: none; } }
 @media (max-width: 720px) { .act-nav { right: 12px; bottom: 58px; } }
 @media print { .act-nav, .act-hint { display: none !important; } }
+
+/* Boxes: editable titles, add / delete, adjustable covers */
+.act-card { position: relative; }
+.act-thumb { position: relative; }
+.act-thumb-icon { width: 46px; height: 46px; fill: none; stroke: #c8ccd4; stroke-width: 1.3; }
+body.editing .act-card-title { outline: 1px dashed var(--hair); outline-offset: 3px; border-radius: 2px; cursor: text; }
+body.editing .act-card-title:focus { outline: 1px solid var(--brand); }
+.act-card-tools { position: absolute; top: 8px; right: 8px; z-index: 2; display: flex; gap: 6px; }
+.act-card-tools button, .act-card-del {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  padding: 5px 9px; border-radius: 3px; border: 1px solid var(--hair);
+  background: rgba(255,255,255,0.95); color: var(--ink);
+}
+.act-card-tools button:hover { border-color: var(--brand); color: var(--brand); }
+.act-drag-hint {
+  position: absolute; left: 8px; bottom: 8px; z-index: 2; pointer-events: none;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #fff; background: rgba(0,0,0,0.6);
+  padding: 4px 8px; border-radius: 3px;
+}
+body.editing .act-thumb.has-img { cursor: grab; }
+body.editing .act-thumb.has-img.dragging { cursor: grabbing; }
+.act-card-del { align-self: flex-start; margin-top: 10px; color: #b42318; border-color: rgba(180,35,24,0.35); background: #fff; }
+.act-card-del:hover { background: #b42318; border-color: #b42318; color: #fff; }
+.act-add-box {
+  min-height: 200px; border: 2px dashed var(--hair); border-radius: 3px; background: transparent;
+  color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.act-add-box:hover { border-color: var(--brand); color: var(--brand); }
+.act-cover-img { display: none !important; }
 </style>
 </head>
 <body>
@@ -1041,7 +1073,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 01</div>
             <h2 class="act-title" id="act-broadcast-title">Broadcast Integrations</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1106,7 +1137,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 02</div>
             <h2 class="act-title" id="act-overlay-title">Virtual Overlay</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1143,7 +1173,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 03</div>
             <h2 class="act-title" id="act-arena-title">In-Arena Branding</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1236,7 +1265,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 04</div>
             <h2 class="act-title" id="act-social-title">Social Content</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1287,7 +1315,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 05</div>
             <h2 class="act-title" id="act-content-title">Integrated Content</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1338,7 +1365,6 @@ body.editing .act-fs { top: 50px; }
       <div class="act-box">
         <div class="act-head">
           <div>
-            <div class="act-kicker" contenteditable="false">Activation 06</div>
             <h2 class="act-title" id="act-ambassadors-title">Athlete Ambassadors</h2>
             <p class="act-hint" contenteditable="false"></p>
           </div>
@@ -1405,9 +1431,61 @@ body.editing .act-fs { top: 50px; }
   <div class="lb-cap"></div>
 </div>
 
+<template id="actTemplate">
+    <div class="act-modal" id="__ID__" role="dialog" aria-modal="true" aria-labelledby="__ID__-title">
+      <div class="act-box">
+        <div class="act-head">
+          <div>
+            <h2 class="act-title" id="__ID__-title">New box</h2>
+            <p class="act-hint" contenteditable="false"></p>
+          </div>
+          <button type="button" class="act-close" contenteditable="false" aria-label="Close">&times;</button>
+        </div>
+        <div class="act-body">
+          <div class="act-grid">
+          <figure class="act-shot is-empty" data-shot="__S1__">
+            <div class="act-frame" contenteditable="false">
+              <button type="button" class="act-fs" data-do="fullscreen" aria-label="View full screen">&#x2922; Full screen</button>
+              <div class="act-drop edit-only">Click or drop an image</div>
+              <div class="act-tools edit-only">
+                <button type="button" data-do="pick" class="when-empty">Add image</button>
+                <button type="button" data-do="pick" class="when-filled">Replace</button>
+                <button type="button" data-do="cover" class="when-filled">Use as cover</button>
+                <button type="button" data-do="remove-img" class="when-filled">Remove image</button>
+                <button type="button" data-do="remove-slot">Delete slot</button>
+              </div>
+            </div>
+            <figcaption class="act-cap"></figcaption>
+          </figure>
+          <figure class="act-shot is-empty" data-shot="__S2__">
+            <div class="act-frame" contenteditable="false">
+              <button type="button" class="act-fs" data-do="fullscreen" aria-label="View full screen">&#x2922; Full screen</button>
+              <div class="act-drop edit-only">Click or drop an image</div>
+              <div class="act-tools edit-only">
+                <button type="button" data-do="pick" class="when-empty">Add image</button>
+                <button type="button" data-do="pick" class="when-filled">Replace</button>
+                <button type="button" data-do="cover" class="when-filled">Use as cover</button>
+                <button type="button" data-do="remove-img" class="when-filled">Remove image</button>
+                <button type="button" data-do="remove-slot">Delete slot</button>
+              </div>
+            </div>
+            <figcaption class="act-cap"></figcaption>
+          </figure>
+            <button type="button" class="act-add edit-only" contenteditable="false">+ Add image slot</button>
+          </div>
+          <p class="act-empty-note" contenteditable="false">Visuals to follow.</p>
+        </div>
+        <div class="act-nav" contenteditable="false">
+          <span class="act-nav-count"></span>
+          <button type="button" class="act-next"><span class="act-next-label">Next image</span> <span class="act-next-arrow" aria-hidden="true">&#8595;</span></button>
+        </div>
+      </div>
+    </div>
+
+</template>
 <script>
 (function () {
-  var BUILD = "c67e2eba648";
+  var BUILD = "c16cea215bd";
   var KEY = 'mvp-1xbet-doc-v1';
   var IDBNAME = KEY + ':images';
   var sheet = document.getElementById('sheet');
@@ -1553,6 +1631,16 @@ body.editing .act-fs { top: 50px; }
         im.setAttribute('alt', cap ? cap.textContent.replace(/\s+/g, ' ').trim() : '');
       }
     });
+    // Custom covers ship baked into the file.
+    Array.prototype.forEach.call(clone.querySelectorAll('img.act-cover-img'), function (ci) {
+      if (ci.getAttribute('src')) { ci.removeAttribute('data-local'); return; }
+      var mm = ci.closest('.act-modal');
+      if (mm && mm.getAttribute('data-cover') === 'custom') mm.removeAttribute('data-cover');
+      ci.remove();
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll('.act-modal'), function (mm) {
+      mm.classList.remove('seen');
+    });
     var lbx = clone.querySelector('#lightbox');
     if (lbx) {
       lbx.classList.remove('open', 'single');
@@ -1636,40 +1724,64 @@ body.editing .act-fs { top: 50px; }
   function renderCards() {
     var wrap = actPanel.querySelector('.act-cards');
     wrap.innerHTML = '';
-    var any = false;
-    modals().forEach(function (m, i) {
+    var any = false, ed = editing();
+    modals().forEach(function (m) {
       var shots = filled(m);
       any = any || shots.length > 0;
       m.classList.toggle('has-images', shots.length > 0);
       all(m, '.act-shot').forEach(function (s) { s.removeAttribute('data-pos'); });
-      navState(m);
-      var k = m.querySelector('.act-kicker');
-      if (k) k.textContent = 'Activation ' + pad2(i + 1);
-      var card = document.createElement('button');
-      card.type = 'button'; card.className = 'act-card'; card.setAttribute('data-open', m.id);
+      if (typeof navState === 'function') navState(m);
+      var cover = coverUrl(m, shots);
+      var card = document.createElement('div');
+      card.className = 'act-card';
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+      card.setAttribute('data-open', m.id);
       var th = document.createElement('div'); th.className = 'act-thumb';
-      if (shots.length) {
+      if (cover) {
         th.classList.add('has-img');
-        th.style.backgroundImage = 'url("' + shots[0].querySelector('img').src + '")';
+        th.style.backgroundImage = 'url("' + cover + '")';
+        th.style.backgroundPosition = m.getAttribute('data-cover-pos') || '50% 50%';
       } else {
-        var num = document.createElement('span'); num.className = 'act-thumb-num';
-        num.textContent = pad2(i + 1); th.appendChild(num);
+        th.innerHTML = '<svg class="act-thumb-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/>' +
+          '<path d="M4 17l5-4.5 3.5 3 3-2.5L20 17"/></svg>';
       }
+      th.insertAdjacentHTML('beforeend', '<div class="act-card-tools edit-only">' +
+        '<button type="button" data-card-do="cover">Change cover</button>' +
+        (m.getAttribute('data-cover') ? '<button type="button" data-card-do="cover-reset">Reset cover</button>' : '') +
+        '</div>' + (cover ? '<span class="act-drag-hint edit-only">Drag to reposition</span>' : ''));
       var body = document.createElement('div'); body.className = 'act-card-body';
-      var kn = document.createElement('div'); kn.className = 'act-card-num';
-      kn.textContent = 'Activation ' + pad2(i + 1);
       var t = document.createElement('div'); t.className = 'act-card-title';
       t.textContent = txt(m.querySelector('.act-title'));
+      if (ed) { t.setAttribute('contenteditable', 'true'); t.setAttribute('spellcheck', 'false'); }
       var meta = document.createElement('div'); meta.className = 'act-card-meta';
       var c = document.createElement('span');
       c.textContent = shots.length ? shots.length + (shots.length === 1 ? ' image' : ' images') : 'Visuals to follow';
       var go = document.createElement('span'); go.className = 'go'; go.textContent = 'View \u2192';
       meta.appendChild(c); meta.appendChild(go);
-      body.appendChild(kn); body.appendChild(t); body.appendChild(meta);
+      var del = document.createElement('button');
+      del.type = 'button'; del.className = 'act-card-del edit-only';
+      del.setAttribute('data-card-do', 'delete'); del.textContent = 'Delete box';
+      body.appendChild(t); body.appendChild(meta); body.appendChild(del);
       card.appendChild(th); card.appendChild(body);
       wrap.appendChild(card);
     });
+    var add = document.createElement('button');
+    add.type = 'button'; add.className = 'act-add-box edit-only'; add.textContent = '+ Add box';
+    wrap.appendChild(add);
     actPanel.classList.toggle('act-none', !any);
+  }
+  function coverUrl(m, shots) {
+    var c = m.getAttribute('data-cover');
+    if (c === 'custom') {
+      var ci = m.querySelector('.act-cover-img');
+      if (ci && ci.getAttribute('src')) return ci.getAttribute('src');
+    } else if (c) {
+      var s = shots.filter(function (x) { return x.getAttribute('data-shot') === c; })[0];
+      if (s) return s.querySelector('.act-frame img').src;
+    }
+    return shots.length ? shots[0].querySelector('.act-frame img').src : '';
   }
 
   // Which image is in view, and what the Next button should say.
@@ -1895,7 +2007,7 @@ body.editing .act-fs { top: 50px; }
   actPanel.addEventListener('click', function (e) {
     var t = e.target;
     var card = t.closest('.act-card');
-    if (card) { openAct(card.getAttribute('data-open')); return; }
+    if (card) { cardClick(e, card); return; }
     if (t.closest('.act-close')) { closeAct(); return; }
     var nx = t.closest('.act-next');
     if (nx) {
@@ -2013,6 +2125,218 @@ body.editing .act-fs { top: 50px; }
     return idbGet(shot.getAttribute('data-shot')).then(function (url) {
       if (url) img.setAttribute('src', url); else drop();
     }, drop);
+  })).then(renderCards);
+
+  // ---- Boxes: edit titles, add / delete boxes, choose and position covers
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function modalFor(el) { var c = el && el.closest('.act-card'); return c ? document.getElementById(c.getAttribute('data-open')) : null; }
+  function noop() {}
+  var dragMoved = false, drag = null, coverTarget = null;
+
+  function addCoverBtn(tools) {
+    if (tools.querySelector('[data-do="cover"]')) return;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'when-filled'; b.setAttribute('data-do', 'cover');
+    b.textContent = 'Use as cover';
+    tools.insertBefore(b, tools.querySelector('[data-do="remove-img"]'));
+  }
+  all(sheet, '.act-tools').forEach(addCoverBtn);
+
+  function cardClick(e, card) {
+    var t = e.target, m = document.getElementById(card.getAttribute('data-open'));
+    if (!m) return;
+    var act = t.closest('[data-card-do]');
+    if (act) {
+      e.preventDefault();
+      var d = act.getAttribute('data-card-do');
+      if (d === 'delete') deleteBox(m);
+      else if (d === 'cover') pickCover(m);
+      else if (d === 'cover-reset') resetCover(m);
+      return;
+    }
+    if (editing() && t.closest('.act-card-title')) return;
+    if (dragMoved) { dragMoved = false; return; }
+    openAct(m.id);
+  }
+
+  function addBox() {
+    var tpl = document.getElementById('actTemplate');
+    if (!tpl) return;
+    var id = 'act-' + uid();
+    var html = tpl.innerHTML.split('__ID__').join(id)
+      .split('__S1__').join('s' + uid() + 'a').split('__S2__').join('s' + uid() + 'b');
+    var holder = document.createElement('div');
+    holder.innerHTML = html.trim();
+    var m = holder.firstElementChild;
+    var last = modals().pop();
+    if (last) last.parentNode.insertBefore(m, last.nextSibling);
+    else actPanel.appendChild(m);
+    var b = m.querySelector('.act-body');
+    if (b && typeof navState === 'function') {
+      b.addEventListener('scroll', function () {
+        if (b.scrollTop > 10) m.classList.add('seen');
+        navState(m);
+      });
+    }
+    renderCards(); persist();
+    var ti = actPanel.querySelector('.act-card[data-open="' + id + '"] .act-card-title');
+    if (ti) {
+      ti.focus();
+      var r = document.createRange(); r.selectNodeContents(ti);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+  }
+
+  function deleteBox(m) {
+    var name = txt(m.querySelector('.act-title')) || 'this';
+    if (!window.confirm('Delete the \u201c' + name + '\u201d box and its images?')) return;
+    all(m, '.act-shot').forEach(function (s) { idbDel(s.getAttribute('data-shot')).catch(noop); });
+    idbDel(m.id + ':cover').catch(noop);
+    m.remove();
+    renderCards(); persist();
+  }
+
+  function pickCover(m) {
+    coverTarget = m; pickTarget = null;
+    actFile.multiple = false; actFile.value = ''; actFile.click();
+  }
+  actFile.addEventListener('change', function () {
+    if (!coverTarget) return;
+    var m = coverTarget; coverTarget = null;
+    var f = (actFile.files || [])[0];
+    if (!f || !/^image\//.test(f.type)) return;
+    loadImage(f).then(function (url) {
+      var ci = m.querySelector('.act-cover-img');
+      if (!ci) {
+        ci = document.createElement('img');
+        ci.className = 'act-cover-img'; ci.alt = ''; ci.setAttribute('contenteditable', 'false');
+        (m.querySelector('.act-box') || m).appendChild(ci);
+      }
+      ci.setAttribute('src', url); ci.setAttribute('data-local', '1');
+      m.setAttribute('data-cover', 'custom'); m.removeAttribute('data-cover-pos');
+      idbPut(m.id + ':cover', url).catch(noop);
+      renderCards(); persist();
+    }, noop);
+  });
+  function dropCustomCover(m) {
+    var ci = m.querySelector('.act-cover-img'); if (ci) ci.remove();
+    idbDel(m.id + ':cover').catch(noop);
+  }
+  function resetCover(m) {
+    dropCustomCover(m);
+    m.removeAttribute('data-cover'); m.removeAttribute('data-cover-pos');
+    renderCards(); persist();
+  }
+
+  actPanel.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.closest('.act-add-box')) { addBox(); return; }
+    var uc = t.closest('[data-do="cover"]');
+    if (uc) {
+      var shot = uc.closest('.act-shot'), m = shot && shot.closest('.act-modal');
+      if (!m) return;
+      dropCustomCover(m);
+      m.setAttribute('data-cover', shot.getAttribute('data-shot'));
+      m.removeAttribute('data-cover-pos');
+      renderCards(); persist();
+      uc.textContent = 'Cover set \u2713';
+      setTimeout(function () { uc.textContent = 'Use as cover'; }, 1400);
+    }
+  });
+
+  // Titles typed on a box are copied straight into its pop-up title (that is
+  // what gets saved); an emptied title becomes "Untitled box".
+  actPanel.addEventListener('input', function (e) {
+    var ti = e.target.closest && e.target.closest('.act-card-title');
+    if (!ti) return;
+    var m = modalFor(ti), h = m && m.querySelector('.act-title');
+    if (h) h.textContent = ti.textContent.replace(/\s+/g, ' ').trim();
+  });
+  actPanel.addEventListener('focusout', function (e) {
+    var ti = e.target.closest && e.target.closest('.act-card-title');
+    if (!ti || txt(ti)) return;
+    ti.textContent = 'Untitled box';
+    var m = modalFor(ti), h = m && m.querySelector('.act-title');
+    if (h) h.textContent = 'Untitled box';
+    persist();
+  });
+  actPanel.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t.closest && t.closest('.act-card-title') && editing()) {
+      if (e.key === 'Enter') { e.preventDefault(); t.blur(); }
+      return;
+    }
+    if (t.classList && t.classList.contains('act-card') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault(); openAct(t.getAttribute('data-open'));
+    }
+  });
+
+  // Ctrl/Cmd+A selects just the text being edited (a title, caption or line),
+  // never the whole document, so typing over it can't wipe the page.
+  document.addEventListener('keydown', function (e) {
+    if (!editing() || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+    if ((e.key || '').toLowerCase() !== 'a') return;
+    var sel = window.getSelection(), n = sel && sel.anchorNode;
+    var el = n && (n.nodeType === 1 ? n : n.parentElement);
+    if (!el || !sheet.contains(el)) return;
+    var box = el.closest('.act-card-title, .act-title, .act-cap, li, dd, dt, p, h1, h2, h3, h4, figcaption, td, th') || el;
+    e.preventDefault();
+    var r = document.createRange(); r.selectNodeContents(box);
+    sel.removeAllRanges(); sel.addRange(r);
+  }, true);
+
+  // Drag a cover to reposition it (edit mode).
+  actPanel.addEventListener('pointerdown', function (e) {
+    if (!editing() || e.button > 0) return;
+    var th = e.target.closest && e.target.closest('.act-thumb.has-img');
+    if (!th || e.target.closest('button')) return;
+    var m = modalFor(th);
+    if (!m) return;
+    var p = (m.getAttribute('data-cover-pos') || '50% 50%').split(' ').map(parseFloat);
+    drag = { th: th, m: m, x: e.clientX, y: e.clientY, px: p[0], py: p[1], moved: false };
+    if (th.setPointerCapture) th.setPointerCapture(e.pointerId);
+    th.classList.add('dragging');
+    e.preventDefault();
+  });
+  actPanel.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+    var r = drag.th.getBoundingClientRect();
+    drag.nx = Math.max(0, Math.min(100, drag.px - dx / r.width * 150));
+    drag.ny = Math.max(0, Math.min(100, drag.py - dy / r.height * 150));
+    drag.th.style.backgroundPosition = drag.nx.toFixed(1) + '% ' + drag.ny.toFixed(1) + '%';
+  });
+  function endDrag() {
+    if (!drag) return;
+    drag.th.classList.remove('dragging');
+    if (drag.moved && drag.nx != null) {
+      drag.m.setAttribute('data-cover-pos', drag.nx.toFixed(1) + '% ' + drag.ny.toFixed(1) + '%');
+      dragMoved = true;
+      setTimeout(function () { dragMoved = false; }, 350);
+      persist();
+    }
+    drag = null;
+  }
+  actPanel.addEventListener('pointerup', endDrag);
+  actPanel.addEventListener('pointercancel', endDrag);
+
+  // Redraw boxes when edit mode is switched on or off.
+  var wasEditing = editing();
+  new MutationObserver(function () {
+    var ed = editing();
+    if (ed !== wasEditing) { wasEditing = ed; renderCards(); }
+  }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // Custom covers saved while editing live in IndexedDB, like gallery photos.
+  Promise.all(all(sheet, 'img.act-cover-img[data-local]').map(function (ci) {
+    if (ci.getAttribute('src')) return null;
+    var m = ci.closest('.act-modal');
+    var drop = function () {
+      ci.remove();
+      if (m && m.getAttribute('data-cover') === 'custom') m.removeAttribute('data-cover');
+    };
+    return idbGet(m.id + ':cover').then(function (u) { if (u) ci.setAttribute('src', u); else drop(); }, drop);
   })).then(renderCards);
 
 })();
